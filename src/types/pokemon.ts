@@ -5,4 +5,10 @@ export type Pokemon = {
     id: number;
     sprites: { [key: string]: string };
   }[];
+  pokemontypes: {
+    type: {
+      id: number;
+      name: string;
+    };
+  }[];
 };

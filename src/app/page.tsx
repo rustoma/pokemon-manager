@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
-import Image from 'next/image';
 
 import client from '@/lib/apolloClient';
+import { HomePage } from '@/pages/HomePage';
 
 import type { Pokemon } from '@/types/pokemon';
 
@@ -18,6 +18,12 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ p
             id
             sprites
           }
+          pokemontypes {
+            type {
+              id
+              name
+            }
+          }
         }
       }
     `,
@@ -26,12 +32,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ p
 
   return (
     <div>
-      {data?.pokemons.map((pokemon) => (
-        <div key={pokemon.id}>
-          <h1>{pokemon.name}</h1>
-          <Image src={pokemon.pokemonsprites[0].sprites.front_default} alt={pokemon.name} width={100} height={100} />
-        </div>
-      ))}
+      <HomePage pokemons={data?.pokemons || []} />
     </div>
   );
 }

@@ -27,12 +27,24 @@ const typeDefs = gql`
   type Pokemon {
     id: Int
     name: String
+    height: Int
+    weight: Int
     pokemonsprites: [PokemonSprite]
+    pokemontypes: [PokemonType]
   }
 
   type PokemonSprite {
     id: Int
     sprites: JSON!
+  }
+
+  type PokemonType {
+    type: Type
+  }
+
+  type Type {
+    id: Int
+    name: String
   }
 `;
 
@@ -51,9 +63,17 @@ const resolvers = {
           pokemon(limit: $limit, offset: $offset) {
             id
             name
+            height
+            weight
             pokemonsprites {
               id
               sprites
+            }
+            pokemontypes {
+              type {
+                id
+                name
+              }
             }
           }
         }
