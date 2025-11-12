@@ -2,32 +2,91 @@ import { ApolloServer } from '@apollo/server';
 import { startServerAndCreateNextHandler } from '@as-integrations/next';
 import bcrypt from 'bcrypt';
 import { gql } from 'graphql-tag';
+import GraphQLJSON from 'graphql-type-json';
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
 
+import { API_ROUTES } from '@/consts/apiRoutes';
 import prisma from '@/lib/prisma';
 
 import type { NextRequest } from 'next/server';
 
 const typeDefs = gql`
+  scalar JSON
+
   type Query {
     hello: String
+    pokemons(limit: Int = 10, offset: Int = 0): [Pokemon]
   }
 
   type Mutation {
     signup(email: String!, password: String!): String
     login(email: String!, password: String!): String
   }
+
+  type Pokemon {
+    id: Int
+    name: String
+    pokemonsprites: [PokemonSprite]
+  }
+
+  type PokemonSprite {
+    id: Int
+    sprites: JSON!
+  }
 `;
 
-// Define resolvers
 const resolvers = {
+  JSON: GraphQLJSON,
   Query: {
     hello: (_: unknown, __: unknown, context: { user: { email: string } | null }) => {
       if (!context.user) {
         throw new Error('Not authenticated');
       }
       return `Hello, ${context.user.email}`;
+    },
+    pokemons: async (_: unknown, { limit = 10, offset = 0 }: { limit?: number; offset?: number }) => {
+      const query = `
+        query GetPokemons($limit: Int!, $offset: Int!) {
+          pokemon(limit: $limit, offset: $offset) {
+            id
+            name
+            pokemonsprites {
+              id
+              sprites
+            }
+          }
+        }
+      `;
+
+      try {
+        const response = await fetch(API_ROUTES.POKEAPI, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            query,
+            variables: { limit, offset },
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`PokeAPI request failed: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+
+        if (result.errors) {
+          throw new Error(`GraphQL errors: ${JSON.stringify(result.errors)}`);
+        }
+
+        const pokemons = result.data?.pokemon || [];
+
+        return pokemons;
+      } catch (error) {
+        throw new Error(`Failed to fetch pokemons: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
     },
   },
   Mutation: {
