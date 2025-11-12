@@ -12,10 +12,18 @@
     "format": "prettier  --check './**/*.{js,jsx,ts,tsx,css,scss,md,json}' --config ./.prettierrc.mjs --ignore-path ./.prettierignore",
     "format:fix": "prettier --write './**/*.{js,jsx,ts,tsx,css,scss,md,json}'  --config ./.prettierrc.mjs --ignore-path ./.prettierignore",
     "compile": "tsc --noEmit",
-    "check": "yarn lint && yarn format && yarn compile"
+    "check": "yarn lint && yarn format && yarn compile",
+    "setup_docker_dev": "cd developers_resources/dev && docker-compose -f docker-compose.dev.yml up -d",
+    "stop_docker_dev": "cd developers_resources/dev && docker-compose -f docker-compose.dev.yml down -v",
+    "prisma:clean": "rm -rf prisma/generated",
+    "prisma:generate": "npx prisma generate",
+    "migrations:generate": "npx prisma migrate dev --create-only",
+    "migrations:apply": "npx prisma migrate deploy && prisma generate"
   },
   "dependencies": {
+    "@prisma/client": "^6.19.0",
     "@tailwindcss/postcss": "^4.1.17",
+    "dotenv": "^17.2.3",
     "next": "16.0.1",
     "postcss": "^8.5.6",
     "react": "19.2.0",
@@ -39,7 +47,10 @@
     "eslint-plugin-unicorn": "^62.0.0",
     "globals": "^16.5.0",
     "husky": "^9.1.7",
+    "install": "^0.13.0",
     "prettier": "^3.6.2",
+    "prisma": "^6.19.0",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   }
 }

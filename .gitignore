@@ -148,3 +148,4 @@ cli/tests/fixtures/test
 /prisma/generated
 
 temp
+/prisma/generated/prisma

@@ -2,7 +2,7 @@ services:
   postgres:
     image: postgres:17-alpine
     restart: always
-    container_name: postgres-dev
+    container_name: pokemon-manager-postgres-dev
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=root
@@ -12,7 +12,7 @@ services:
     networks:
       - pokemon-manager-dev
     ports:
-      - "5432:5432"
+      - "6566:5432"
 
 volumes:
   pgdata-dev:
