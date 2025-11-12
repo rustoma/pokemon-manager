@@ -1,0 +1,8 @@
+**/temp/*
+**/dist/*
+**/node_modules/*
+**/coverage/*
+**/temp/*
+**/dist/*
+.next/*
+prisma/generated/*
