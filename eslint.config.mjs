@@ -6,12 +6,14 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 import nextVitals from 'eslint-config-next/core-web-vitals';
 import nextTs from 'eslint-config-next/typescript';
 import globals from 'globals';
+import importPlugin from 'eslint-plugin-import';
 
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   eslintConfigPrettier,
   reactRefresh.configs.recommended,
+  reactHooks.configs.flat.recommended,
   globalIgnores([
     'node_modules',
     '.github',
@@ -27,6 +29,9 @@ const eslintConfig = defineConfig([
   eslintPluginUnicorn.configs.all,
   {
     files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'],
+    plugins: {
+      import: importPlugin,
+    },
     languageOptions: {
       ecmaVersion: 2020,
       globals: {
@@ -37,8 +42,13 @@ const eslintConfig = defineConfig([
         EventListener: 'readonly',
       },
     },
+    settings: {
+      'import/resolver': {
+        typescript: true,
+        node: true,
+      },
+    },
     rules: {
-      ...reactHooks.configs.recommended.rules,
       'import/no-extraneous-dependencies': 'off',
       '@typescript-eslint/keyword-spacing': 'off',
       'import/prefer-default-export': 'off',
@@ -93,8 +103,6 @@ const eslintConfig = defineConfig([
       'unicorn/no-nested-ternary': 'off',
     },
   },
-
-  // {
 ]);
 
 export default eslintConfig;
