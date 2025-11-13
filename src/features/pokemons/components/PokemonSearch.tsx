@@ -11,7 +11,7 @@ export const PokemonSearch = () => {
 
   const handleSearch = useCallback(() => {
     if (inputValue.trim()) {
-      router.push(`/?search=${inputValue}`);
+      router.push(`/?name=${inputValue}`);
     }
   }, [inputValue, router]);
 

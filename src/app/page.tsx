@@ -5,27 +5,46 @@ import { HomePage } from '@/pages/HomePage';
 
 import type { Pokemon } from '@/types/pokemon';
 
-const ALLOWED_LIMITS = [10, 20, 50] as const;
-
-export default async function Home({ searchParams }: { searchParams: Promise<{ page?: number; limit?: number }> }) {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    page?: number;
+    limit?: number;
+    sort?: string;
+    minHeight?: string;
+    maxHeight?: string;
+    minWeight?: string;
+    maxWeight?: string;
+    name?: string;
+  }>;
+}) {
   const params = await searchParams;
-  let { page = 1, limit = 10 } = params;
+  const { page = 1, limit = 10, sort, minHeight, maxHeight, minWeight, maxWeight, name } = params;
 
-  // Validate and sanitize limit
-  const limitNum = Number(limit);
-  limit = ALLOWED_LIMITS.includes(limitNum as (typeof ALLOWED_LIMITS)[number]) ? limitNum : 10;
+  const order_by = sort ? { [sort]: 'asc' } : undefined;
 
-  // Validate and sanitize page
-  const pageNum = Number(page);
-  page = pageNum > 0 ? pageNum : 1;
+  const filter: {
+    minHeight?: number;
+    maxHeight?: number;
+    minWeight?: number;
+    maxWeight?: number;
+    name?: string;
+  } = {};
+  if (minHeight) filter.minHeight = Number.parseInt(minHeight, 10);
+  if (maxHeight) filter.maxHeight = Number.parseInt(maxHeight, 10);
+  if (minWeight) filter.minWeight = Number.parseInt(minWeight, 10);
+  if (maxWeight) filter.maxWeight = Number.parseInt(maxWeight, 10);
+  if (name) filter.name = name;
 
-  // Calculate offset (page 1 should start at offset 0)
+  const hasFilter = Object.keys(filter).length > 0;
+
   const offset = (page - 1) * limit;
 
   const { data } = await client.query<{ pokemons: Pokemon[] }>({
     query: gql`
-      query GetPokemons($limit: Int!, $offset: Int!) {
-        pokemons(limit: $limit, offset: $offset) {
+      query GetPokemons($limit: Int!, $offset: Int!, $order_by: PokemonOrder, $filter: PokemonFilter) {
+        pokemons(limit: $limit, offset: $offset, order_by: $order_by, filter: $filter) {
           id
           name
           pokemonsprites {
@@ -41,7 +60,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ p
         }
       }
     `,
-    variables: { limit, offset },
+    variables: { limit, offset, order_by, filter: hasFilter ? filter : undefined },
   });
 
   return (

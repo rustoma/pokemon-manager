@@ -29,6 +29,10 @@ const typeDefs = gql`
     _lte: Int
   }
 
+  input String_comparison_exp {
+    _ilike: String
+  }
+
   input PokemonOrder {
     name: SortingOrder
     height: SortingOrder
@@ -41,7 +45,7 @@ const typeDefs = gql`
   }
 
   input PokemonFilter {
-    name: String
+    name: String_comparison_exp
     minHeight: Int
     maxHeight: Int
     minWeight: Int
