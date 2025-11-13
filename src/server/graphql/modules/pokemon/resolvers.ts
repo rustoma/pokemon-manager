@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { print } from 'graphql';
+import { GraphQLError, print } from 'graphql';
 
 import { API_ROUTES } from '@/consts/apiRoutes';
 import { GetPokemon, GetPokemons } from '@/server/graphql/modules/pokemon/remote/queries';
@@ -24,15 +24,15 @@ const resolvers = {
         const result = response.data;
 
         if (result.errors) {
-          throw new Error(`GraphQL errors: ${JSON.stringify(result.errors)}`);
+          throw new GraphQLError(`GraphQL errors: ${JSON.stringify(result.errors)}`);
         }
 
         return result.data?.pokemon?.[0] ?? null;
       } catch (error) {
         if (axios.isAxiosError(error)) {
-          throw new Error(`Failed to fetch pokemon: ${error.response?.statusText || error.message}`);
+          throw new GraphQLError(`Failed to fetch pokemon: ${error.response?.statusText || error.message}`);
         }
-        throw new Error(`Failed to fetch pokemon: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        throw new GraphQLError(`Failed to fetch pokemon: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     },
     pokemons: async (
@@ -85,7 +85,7 @@ const resolvers = {
         const result = response.data;
 
         if (result.errors) {
-          throw new Error(`GraphQL errors: ${JSON.stringify(result.errors)}`);
+          throw new GraphQLError(`GraphQL errors: ${JSON.stringify(result.errors)}`);
         }
 
         const pokemons = result.data?.pokemon || [];
@@ -93,9 +93,9 @@ const resolvers = {
         return pokemons;
       } catch (error) {
         if (axios.isAxiosError(error)) {
-          throw new Error(`Failed to fetch pokemons: ${error.response?.statusText || error.message}`);
+          throw new GraphQLError(`Failed to fetch pokemons: ${error.response?.statusText || error.message}`);
         }
-        throw new Error(`Failed to fetch pokemons: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        throw new GraphQLError(`Failed to fetch pokemons: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     },
   },

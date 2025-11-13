@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt';
+import { GraphQLError } from 'graphql';
 import jwt from 'jsonwebtoken';
 
 import prisma from '@/lib/prisma';
@@ -7,7 +8,7 @@ const resolvers = {
   Query: {
     hello: (_: unknown, __: unknown, context: { user: { email: string } | null }) => {
       if (!context.user) {
-        throw new Error('Not authenticated');
+        throw new GraphQLError('Not authenticated');
       }
       return `Hello, ${context.user.email}`;
     },
@@ -19,7 +20,7 @@ const resolvers = {
       });
 
       if (existingUser) {
-        throw new Error('User with this email already exists');
+        throw new GraphQLError('User with this email already exists');
       }
 
       const SALT_ROUNDS = 10;
@@ -35,7 +36,7 @@ const resolvers = {
       const JWT_SECRET = process.env.JWT_SECRET ?? '';
 
       if (!JWT_SECRET) {
-        throw new Error('JWT_SECRET is not set');
+        throw new GraphQLError('JWT_SECRET is not set');
       }
 
       const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, {
@@ -50,19 +51,19 @@ const resolvers = {
       });
 
       if (!user) {
-        throw new Error('Invalid credentials');
+        throw new GraphQLError('Invalid credentials');
       }
 
       const isValidPassword = await bcrypt.compare(password, user.password);
 
       if (!isValidPassword) {
-        throw new Error('Invalid credentials');
+        throw new GraphQLError('Invalid credentials');
       }
 
       const JWT_SECRET = process.env.JWT_SECRET ?? '';
 
       if (!JWT_SECRET) {
-        throw new Error('JWT_SECRET is not set');
+        throw new GraphQLError('JWT_SECRET is not set');
       }
 
       const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, {

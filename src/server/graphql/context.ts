@@ -1,3 +1,4 @@
+import { GraphQLError } from 'graphql';
 import jwt from 'jsonwebtoken';
 
 import type { NextRequest } from 'next/server';
@@ -11,7 +12,7 @@ export const buildContext = async (req: NextRequest) => {
       const JWT_SECRET = process.env.JWT_SECRET ?? '';
 
       if (!JWT_SECRET) {
-        throw new Error('JWT_SECRET is not set');
+        throw new GraphQLError('JWT_SECRET is not set');
       }
 
       const decoded = jwt.verify(token, JWT_SECRET);
