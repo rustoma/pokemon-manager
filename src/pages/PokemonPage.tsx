@@ -2,6 +2,8 @@ import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { CLIENT_ROUTES } from '@/consts/clientRoutes';
+
 import type { Pokemon } from '@/types/pokemon';
 
 interface PokemonPageProps {
@@ -15,14 +17,14 @@ export const PokemonPage = ({ pokemon, prev, next }: PokemonPageProps) => {
     <div>
       <div className="flex items-center justify-between">
         {prev && (
-          <Link href={`/pokemons/official/${prev.id}`} className="flex items-center gap-2">
+          <Link href={CLIENT_ROUTES.POKEMON_DETAIL(prev.id)} className="flex items-center gap-2">
             <ArrowLeftIcon className="w-4 h-4" />
             <p>#{prev.id}</p>
             <h4>{prev.name}</h4>
           </Link>
         )}
         {next && (
-          <Link href={`/pokemons/official/${next.id}`} className="flex items-center gap-2">
+          <Link href={CLIENT_ROUTES.POKEMON_DETAIL(next.id)} className="flex items-center gap-2">
             <ArrowRightIcon className="w-4 h-4" />
             <p>#{next.id}</p>
             <h4>{next.name}</h4>

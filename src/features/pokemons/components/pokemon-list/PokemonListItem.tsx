@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { CLIENT_ROUTES } from '@/consts/clientRoutes';
 import { PokemonTypeChip } from '@/features/pokemons/components/PokemonTypeChip';
 
 import type { Pokemon } from '@/types/pokemon';
@@ -11,7 +12,7 @@ interface PokemonListItemProps {
 
 export const PokemonListItem = ({ pokemon }: PokemonListItemProps) => {
   return (
-    <Link href={`/pokemons/official/${pokemon.id}`}>
+    <Link href={CLIENT_ROUTES.POKEMON_DETAIL(pokemon.id)}>
       <div className="flex flex-col gap-4">
         <div className="flex flex-col">
           {pokemon.pokemonsprites[0].sprites.front_default && (

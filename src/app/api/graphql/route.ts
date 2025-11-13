@@ -9,6 +9,7 @@ import 'dotenv/config';
 
 import { API_ROUTES } from '@/consts/apiRoutes';
 import prisma from '@/lib/prisma';
+import { customPokemonCreateSchema, customPokemonUpdateSchema } from '@/schemas/customPokemon';
 
 import type { NextRequest } from 'next/server';
 
@@ -47,15 +48,28 @@ const typeDefs = gql`
     maxWeight: Int
   }
 
+  type CustomPokemon {
+    id: Int
+    name: String
+    height: Int
+    weight: Int
+    imagePath: String
+  }
+
   type Query {
     hello: String
     pokemons(limit: Int = 10, offset: Int = 0, order_by: PokemonOrder = { name: asc }, filter: PokemonFilter): [Pokemon]
     pokemon(where: pokemon_bool_exp!): Pokemon
+    customPokemons: [CustomPokemon!]!
+    customPokemon(id: Int!): CustomPokemon
   }
 
   type Mutation {
     signup(email: String!, password: String!): String
     login(email: String!, password: String!): String
+    createCustomPokemon(name: String!, height: Int!, weight: Int!, imagePath: String!): CustomPokemon
+    updateCustomPokemon(id: Int!, name: String!, height: Int!, weight: Int!, imagePath: String!): CustomPokemon
+    deleteCustomPokemon(id: Int!): CustomPokemon
   }
 
   type Pokemon {
@@ -110,6 +124,16 @@ const resolvers = {
         throw new Error('Not authenticated');
       }
       return `Hello, ${context.user.email}`;
+    },
+    customPokemons: async () => {
+      const items = await prisma.customPokemon.findMany({
+        orderBy: { createdAt: 'desc' },
+      });
+      return items;
+    },
+    customPokemon: async (_: unknown, { id }: { id: number }) => {
+      const item = await prisma.customPokemon.findUnique({ where: { id } });
+      return item;
     },
     pokemon: async (_: unknown, { where }: { where: { id: { _eq: number } } }) => {
       const query = gql`
@@ -262,6 +286,39 @@ const resolvers = {
     },
   },
   Mutation: {
+    createCustomPokemon: async (
+      _: unknown,
+      { name, height, weight, imagePath }: { name: string; height: number; weight: number; imagePath: string },
+    ) => {
+      const parsed = customPokemonCreateSchema.parse({ name, height, weight, imagePath });
+      const customPokemon = await prisma.customPokemon.create({
+        data: parsed,
+      });
+      return customPokemon;
+    },
+    updateCustomPokemon: async (
+      _: unknown,
+      {
+        id,
+        name,
+        height,
+        weight,
+        imagePath,
+      }: { id: number; name: string; height: number; weight: number; imagePath: string },
+    ) => {
+      const parsed = customPokemonUpdateSchema.parse({ id, name, height, weight, imagePath });
+      const customPokemon = await prisma.customPokemon.update({
+        where: { id },
+        data: { name: parsed.name, height: parsed.height, weight: parsed.weight, imagePath: parsed.imagePath },
+      });
+      return customPokemon;
+    },
+    deleteCustomPokemon: async (_: unknown, { id }: { id: number }) => {
+      const customPokemon = await prisma.customPokemon.delete({
+        where: { id },
+      });
+      return customPokemon;
+    },
     signup: async (_: unknown, { email, password }: { email: string; password: string }) => {
       const existingUser = await prisma.user.findUnique({
         where: { email },

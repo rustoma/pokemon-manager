@@ -4,10 +4,7 @@ import { useMemo } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import z from 'zod';
-
-const IMAGE_MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
-const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+import { z } from 'zod';
 
 const schema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -19,11 +16,7 @@ const schema = z.object({
     .number({ error: 'Weight must be a number' })
     .int('Weight must be an integer')
     .positive('Weight must be positive'),
-  image: z
-    .custom<File>((val) => val instanceof File, { message: 'Image file is required' })
-    .refine((file) => !!file && file.size > 0, 'Image file is required')
-    .refine((file) => file.size <= IMAGE_MAX_SIZE_BYTES, 'Image must be <= 5MB')
-    .refine((file) => ACCEPTED_IMAGE_TYPES.includes(file.type), 'Unsupported image type'),
+  imagePath: z.string().url('Image must be a valid URL'),
 });
 
 export type CustomPokemonFormValues = z.infer<typeof schema>;
@@ -31,15 +24,16 @@ export type CustomPokemonFormValues = z.infer<typeof schema>;
 interface CustomPokemonFormProps {
   defaultValues?: Partial<CustomPokemonFormValues>;
   submitLabel?: string;
+  onSubmit?: (values: CustomPokemonFormValues) => Promise<void> | void;
 }
 
-export function CustomPokemonForm({ defaultValues, submitLabel = 'Create' }: CustomPokemonFormProps) {
+export function CustomPokemonForm({ defaultValues, submitLabel = 'Create', onSubmit }: CustomPokemonFormProps) {
   const initialValues = useMemo<CustomPokemonFormValues>(
     () => ({
       name: defaultValues?.name ?? '',
       height: defaultValues?.height ?? 1,
       weight: defaultValues?.weight ?? 1,
-      image: (defaultValues?.image as File) ?? (undefined as unknown as File),
+      imagePath: defaultValues?.imagePath ?? '',
     }),
     [defaultValues],
   );
@@ -48,14 +42,20 @@ export function CustomPokemonForm({ defaultValues, submitLabel = 'Create' }: Cus
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    setValue,
   } = useForm<CustomPokemonFormValues>({
     resolver: zodResolver(schema),
     defaultValues: initialValues,
   });
 
   const internalSubmit = async (values: CustomPokemonFormValues) => {
-    console.log('🚀 ~ internalSubmit ~ values:', values);
+    if (onSubmit) {
+      await onSubmit(values);
+      return;
+    }
+    // fallback
+    // eslint-disable-next-line no-console
+    console.log('Custom Pokemon (UI only):', values);
+    alert('Submitted! (UI-only fallback)');
   };
 
   return (
@@ -106,22 +106,17 @@ export function CustomPokemonForm({ defaultValues, submitLabel = 'Create' }: Cus
       </div>
 
       <div>
-        <label htmlFor="image" className="mb-1 block text-sm font-medium">
-          Image
+        <label htmlFor="imagePath" className="mb-1 block text-sm font-medium">
+          Image URL
         </label>
         <input
-          id="image"
-          type="file"
-          accept={ACCEPTED_IMAGE_TYPES.join(',')}
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) {
-              setValue('image', file, { shouldValidate: true });
-            }
-          }}
+          id="imagePath"
+          type="url"
+          placeholder="https://example.com/my-pokemon.png"
+          {...register('imagePath')}
           className="w-full rounded border border-gray-300 px-3 py-2"
         />
-        {errors.image && <p className="mt-1 text-sm text-red-600">{errors.image.message as string}</p>}
+        {errors.imagePath && <p className="mt-1 text-sm text-red-600">{errors.imagePath.message}</p>}
       </div>
 
       <div className="pt-2">
