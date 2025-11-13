@@ -16,6 +16,8 @@ export const GET_POKEMON_WITH_NEIGHBORS = gql`
     pokemon(where: { id: { _eq: $id } }) {
       id
       name
+      height
+      weight
       pokemonsprites {
         id
         sprites
