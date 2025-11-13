@@ -28,9 +28,28 @@ const typeDefs = gql`
     _lte: Int
   }
 
+  input PokemonOrder {
+    name: SortingOrder
+    height: SortingOrder
+    weight: SortingOrder
+  }
+
+  enum SortingOrder {
+    asc
+    desc
+  }
+
+  input PokemonFilter {
+    name: String
+    minHeight: Int
+    maxHeight: Int
+    minWeight: Int
+    maxWeight: Int
+  }
+
   type Query {
     hello: String
-    pokemons(limit: Int = 10, offset: Int = 0): [Pokemon]
+    pokemons(limit: Int = 10, offset: Int = 0, order_by: PokemonOrder = { name: asc }, filter: PokemonFilter): [Pokemon]
     pokemon(where: pokemon_bool_exp!): Pokemon
   }
 
@@ -159,10 +178,23 @@ const resolvers = {
         throw new Error(`Failed to fetch pokemon: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     },
-    pokemons: async (_: unknown, { limit = 10, offset = 0 }: { limit?: number; offset?: number }) => {
+    pokemons: async (
+      _: unknown,
+      {
+        limit = 10,
+        offset = 0,
+        order_by,
+        filter,
+      }: {
+        limit?: number;
+        offset?: number;
+        order_by?: { name?: 'asc' | 'desc'; height?: 'asc' | 'desc'; weight?: 'asc' | 'desc' };
+        filter?: { name?: string; minHeight?: number; maxHeight?: number; minWeight?: number; maxWeight?: number };
+      },
+    ) => {
       const query = gql`
-        query GetPokemons($limit: Int!, $offset: Int!) {
-          pokemon(limit: $limit, offset: $offset) {
+        query GetPokemons($limit: Int!, $offset: Int!, $order_by: [pokemon_order_by!], $where: pokemon_bool_exp) {
+          pokemon(limit: $limit, offset: $offset, order_by: $order_by, where: $where) {
             id
             name
             height
@@ -182,6 +214,24 @@ const resolvers = {
       `;
 
       try {
+        const remoteOrderBy = order_by ? Object.entries(order_by).map(([key, value]) => ({ [key]: value })) : undefined;
+        const remoteWhere: Record<string, unknown> = {};
+        if (filter?.name) {
+          remoteWhere.name = { _ilike: `%${filter.name}%` };
+        }
+        if (filter?.minHeight != null || filter?.maxHeight != null) {
+          const height: Record<string, number> = {};
+          if (filter.minHeight != null) height._gte = filter.minHeight;
+          if (filter.maxHeight != null) height._lte = filter.maxHeight;
+          remoteWhere.height = height;
+        }
+        if (filter?.minWeight != null || filter?.maxWeight != null) {
+          const weight: Record<string, number> = {};
+          if (filter.minWeight != null) weight._gte = filter.minWeight;
+          if (filter.maxWeight != null) weight._lte = filter.maxWeight;
+          remoteWhere.weight = weight;
+        }
+        const where = Object.keys(remoteWhere).length > 0 ? remoteWhere : undefined;
         const response = await fetch(API_ROUTES.POKEAPI, {
           method: 'POST',
           headers: {
@@ -189,7 +239,7 @@ const resolvers = {
           },
           body: JSON.stringify({
             query: print(query),
-            variables: { limit, offset },
+            variables: { limit, offset, order_by: remoteOrderBy, where },
           }),
         });
 
@@ -233,7 +283,7 @@ const resolvers = {
 
       const JWT_SECRET = process.env.JWT_SECRET ?? '';
 
-      if (JWT_SECRET) {
+      if (!JWT_SECRET) {
         throw new Error('JWT_SECRET is not set');
       }
 
