@@ -4,12 +4,12 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { CLIENT_ROUTES } from '@/consts/clientRoutes';
-import { PokemonDetailTypeChip } from '@/features/pokemons/components/PokemonDetailTypeChip';
-import { StatItem } from '@/features/pokemons/components/StatItem';
-import { VersionIcon } from '@/features/pokemons/components/VersionIcon';
+import { CLIENT_ROUTES } from '@/client/consts/clientRoutes';
+import { PokemonDetailTypeChip } from '@/client/features/pokemons/components/PokemonDetailTypeChip';
+import { StatItem } from '@/client/features/pokemons/components/StatItem';
+import { VersionIcon } from '@/client/features/pokemons/components/VersionIcon';
 
-import type { Pokemon } from '@/types/pokemon';
+import type { Pokemon } from '@/client/types/pokemon';
 
 interface PokemonPageProps {
   pokemon: Pokemon;

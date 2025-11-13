@@ -1,10 +1,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { CLIENT_ROUTES } from '@/consts/clientRoutes';
-import { PokemonTypeChip } from '@/features/pokemons/components/PokemonTypeChip';
+import { CLIENT_ROUTES } from '@/client/consts/clientRoutes';
+import { PokemonTypeChip } from '@/client/features/pokemons/components/PokemonTypeChip';
 
-import type { Pokemon } from '@/types/pokemon';
+import type { Pokemon } from '@/client/types/pokemon';
 
 interface PokemonListItemProps {
   pokemon: Pokemon;

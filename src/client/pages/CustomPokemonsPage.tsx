@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+import { CLIENT_ROUTES } from '@/client/consts/clientRoutes';
 import { DELETE_CUSTOM_POKEMON } from '@/client/graphql/customPokemon/mutations';
-import { CLIENT_ROUTES } from '@/consts/clientRoutes';
 import client from '@/lib/apolloClient';
 
 import type { CustomPokemon } from '@prisma/generated/prisma/client';

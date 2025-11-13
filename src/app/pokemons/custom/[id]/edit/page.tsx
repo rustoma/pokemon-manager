@@ -1,6 +1,6 @@
 import { GET_CUSTOM_POKEMON } from '@/client/graphql/customPokemon/queries';
+import { EditCustomPokemonPage } from '@/client/pages/EditCustomPokemonPage';
 import client from '@/lib/apolloClient';
-import { EditCustomPokemonPage } from '@/pages/EditCustomPokemonPage';
 
 type CustomPokemon = {
   id: number;

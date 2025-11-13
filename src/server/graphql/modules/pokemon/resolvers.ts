@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { GraphQLError, print } from 'graphql';
 
-import { API_ROUTES } from '@/consts/apiRoutes';
+import { API_ROUTES } from '@/client/consts/apiRoutes';
 import { GetPokemon, GetPokemons } from '@/server/graphql/modules/pokemon/remote/queries';
 
 const resolvers = {

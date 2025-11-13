@@ -1,6 +1,6 @@
 import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';
 
-import { API_ROUTES } from '@/consts/apiRoutes';
+import { API_ROUTES } from '@/client/consts/apiRoutes';
 
 const getGraphQLUri = () => {
   if (globalThis.window === undefined) {

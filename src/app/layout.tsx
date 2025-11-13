@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 import { Geist, Geist_Mono } from 'next/font/google';
 
-import { UserProvider } from '@/features/auth/providers/UserProvider';
+import { UserProvider } from '@/client/features/auth/providers/UserProvider';
 
 import type { Metadata } from 'next';
 

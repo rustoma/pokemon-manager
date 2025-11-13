@@ -1,8 +1,8 @@
 import { GET_POKEMONS } from '@/client/graphql/pokemon/queries';
+import { HomePage } from '@/client/pages/HomePage';
 import client from '@/lib/apolloClient';
-import { HomePage } from '@/pages/HomePage';
 
-import type { Pokemon } from '@/types/pokemon';
+import type { Pokemon } from '@/client/types/pokemon';
 
 export default async function Home({
   searchParams,

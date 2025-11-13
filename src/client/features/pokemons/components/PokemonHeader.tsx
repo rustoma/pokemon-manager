@@ -3,9 +3,9 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+import { CLIENT_ROUTES } from '@/client/consts/clientRoutes';
+import { useUser } from '@/client/features/auth/hooks/useUser';
 import { LOGIN, SIGNUP } from '@/client/graphql/auth/mutations';
-import { CLIENT_ROUTES } from '@/consts/clientRoutes';
-import { useUser } from '@/features/auth/hooks/useUser';
 import client from '@/lib/apolloClient';
 
 export const PokemonHeader = () => {

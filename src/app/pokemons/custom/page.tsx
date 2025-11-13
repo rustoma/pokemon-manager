@@ -1,6 +1,6 @@
 import { GET_CUSTOM_POKEMONS } from '@/client/graphql/customPokemon/queries';
+import { CustomPokemonsPage } from '@/client/pages/CustomPokemonsPage';
 import client from '@/lib/apolloClient';
-import { CustomPokemonsPage } from '@/pages/CustomPokemonsPage';
 
 import type { CustomPokemon } from '@prisma/generated/prisma/client';
 

@@ -1,10 +1,10 @@
 import { notFound } from 'next/navigation';
 
 import { GET_POKEMON_WITH_NEIGHBORS } from '@/client/graphql/pokemon/queries';
+import { PokemonPage } from '@/client/pages/PokemonPage';
 import client from '@/lib/apolloClient';
-import { PokemonPage } from '@/pages/PokemonPage';
 
-import type { Pokemon } from '@/types/pokemon';
+import type { Pokemon } from '@/client/types/pokemon';
 
 export default async function OfficialPokemonsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

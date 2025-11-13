@@ -2,7 +2,7 @@ import { useContext } from 'react';
 
 import { GraphQLError } from 'graphql';
 
-import { UserContext } from '@/features/auth/contexts/UserContext';
+import { UserContext } from '@/client/features/auth/contexts/UserContext';
 
 export const useUser = () => {
   const context = useContext(UserContext);

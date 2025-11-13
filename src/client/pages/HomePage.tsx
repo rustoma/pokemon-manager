@@ -1,13 +1,13 @@
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
 
-import { Pagination } from '@/features/pokemons/components/Pagination';
-import { PokemonList } from '@/features/pokemons/components/pokemon-list/PokemonList';
-import { PokemonAdvanceFilters } from '@/features/pokemons/components/PokemonAdvanceFilters';
-import { PokemonHeader } from '@/features/pokemons/components/PokemonHeader';
-import { PokemonSearch } from '@/features/pokemons/components/PokemonSearch';
-import { PokemonSort } from '@/features/pokemons/components/PokemonSort';
+import { Pagination } from '@/client/features/pokemons/components/Pagination';
+import { PokemonList } from '@/client/features/pokemons/components/pokemon-list/PokemonList';
+import { PokemonAdvanceFilters } from '@/client/features/pokemons/components/PokemonAdvanceFilters';
+import { PokemonHeader } from '@/client/features/pokemons/components/PokemonHeader';
+import { PokemonSearch } from '@/client/features/pokemons/components/PokemonSearch';
+import { PokemonSort } from '@/client/features/pokemons/components/PokemonSort';
 
-import type { Pokemon } from '@/types/pokemon';
+import type { Pokemon } from '@/client/types/pokemon';
 
 interface HomePageProps {
   pokemons: Pokemon[];

@@ -1,6 +1,6 @@
-import { PokemonListItem } from '@/features/pokemons/components/pokemon-list/PokemonListItem';
+import { PokemonListItem } from '@/client/features/pokemons/components/pokemon-list/PokemonListItem';
 
-import type { Pokemon } from '@/types/pokemon';
+import type { Pokemon } from '@/client/types/pokemon';
 
 interface PokemonListProps {
   pokemons: Pokemon[];

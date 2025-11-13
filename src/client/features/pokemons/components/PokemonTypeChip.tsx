@@ -1,4 +1,4 @@
-import { TYPE_COLORS } from '@/consts/pokemon';
+import { TYPE_COLORS } from '@/client/consts/pokemon';
 
 interface PokemonTypeChipProps {
   typeName: string;

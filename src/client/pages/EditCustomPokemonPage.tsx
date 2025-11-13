@@ -5,9 +5,9 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+import { CLIENT_ROUTES } from '@/client/consts/clientRoutes';
+import { CustomPokemonForm } from '@/client/features/pokemons/components/custom/CustomPokemonForm';
 import { UPDATE_CUSTOM_POKEMON } from '@/client/graphql/customPokemon/mutations';
-import { CLIENT_ROUTES } from '@/consts/clientRoutes';
-import { CustomPokemonForm } from '@/features/pokemons/components/custom/CustomPokemonForm';
 import client from '@/lib/apolloClient';
 
 type CustomPokemon = {

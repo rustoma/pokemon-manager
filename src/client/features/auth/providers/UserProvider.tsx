@@ -2,7 +2,7 @@
 
 import { useState, useCallback, type ReactNode } from 'react';
 
-import { UserContext } from '@/features/auth/contexts/UserContext';
+import { UserContext } from '@/client/features/auth/contexts/UserContext';
 
 const TOKEN_KEY = 'token';
 
