@@ -22,6 +22,9 @@ export default async function Home({
   const params = await searchParams;
   const { page = 1, limit = 10, sort, minHeight, maxHeight, minWeight, maxWeight, name } = params;
 
+  const numericLimit = Number(limit);
+  const numericPage = Number(page);
+
   const order_by = sort ? { [sort]: 'asc' } : undefined;
 
   const filter: {
@@ -39,7 +42,7 @@ export default async function Home({
 
   const hasFilter = Object.keys(filter).length > 0;
 
-  const offset = (page - 1) * limit;
+  const offset = (numericPage - 1) * numericLimit;
 
   const { data } = await client.query<{ pokemons: Pokemon[] }>({
     query: gql`
@@ -60,12 +63,12 @@ export default async function Home({
         }
       }
     `,
-    variables: { limit, offset, order_by, filter: hasFilter ? filter : undefined },
+    variables: { limit: numericLimit, offset, order_by, filter: hasFilter ? filter : undefined },
   });
 
   return (
     <div>
-      <HomePage pokemons={data?.pokemons || []} currentPage={page} limit={limit} />
+      <HomePage pokemons={data?.pokemons || []} currentPage={numericPage} limit={numericLimit} />
     </div>
   );
 }
