@@ -45,6 +45,8 @@ const typeDefs = gql`
     height: Int
     weight: Int
     pokemonsprites: [PokemonSprite]
+    pokemongameindices: [PokemonGameIndex]
+    pokemonabilities: [PokemonAbility]
     pokemontypes: [PokemonType]
   }
 
@@ -53,6 +55,24 @@ const typeDefs = gql`
     sprites: JSON!
   }
 
+  type PokemonGameIndex {
+    version: Version
+  }
+
+  type PokemonAbility {
+    ability: Ability
+  }
+  type Ability {
+    abilitynames: [AbilityName]
+  }
+  type AbilityName {
+    id: Int
+    name: String
+  }
+  type Version {
+    name: String
+    id: Int
+  }
   type PokemonType {
     type: Type
   }
@@ -80,6 +100,12 @@ const resolvers = {
             name
             height
             weight
+            pokemongameindices {
+              version {
+                name
+                id
+              }
+            }
             pokemonsprites {
               id
               sprites
@@ -88,6 +114,18 @@ const resolvers = {
               type {
                 id
                 name
+              }
+            }
+            pokemonabilities {
+              ability {
+                abilitynames {
+                  id
+                  name
+                  language {
+                    name
+                    id
+                  }
+                }
               }
             }
           }
