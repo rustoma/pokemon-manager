@@ -1,5 +1,6 @@
 import { ApolloServer } from '@apollo/server';
 import { startServerAndCreateNextHandler } from '@as-integrations/next';
+import axios from 'axios';
 import bcrypt from 'bcrypt';
 import { print } from 'graphql';
 import { gql } from 'graphql-tag';
@@ -180,22 +181,20 @@ const resolvers = {
       `;
 
       try {
-        const response = await fetch(API_ROUTES.POKEAPI, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
+        const response = await axios.post(
+          API_ROUTES.POKEAPI,
+          {
             query: print(query),
             variables: { where, limit: 1 },
-          }),
-        });
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        );
 
-        if (!response.ok) {
-          throw new Error(`PokeAPI request failed: ${response.statusText}`);
-        }
-
-        const result = await response.json();
+        const result = response.data;
 
         if (result.errors) {
           throw new Error(`GraphQL errors: ${JSON.stringify(result.errors)}`);
@@ -203,6 +202,9 @@ const resolvers = {
 
         return result.data?.pokemon?.[0] ?? null;
       } catch (error) {
+        if (axios.isAxiosError(error)) {
+          throw new Error(`Failed to fetch pokemon: ${error.response?.statusText || error.message}`);
+        }
         throw new Error(`Failed to fetch pokemon: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     },
@@ -260,22 +262,20 @@ const resolvers = {
           remoteWhere.weight = weight;
         }
         const where = Object.keys(remoteWhere).length > 0 ? remoteWhere : undefined;
-        const response = await fetch(API_ROUTES.POKEAPI, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
+        const response = await axios.post(
+          API_ROUTES.POKEAPI,
+          {
             query: print(query),
             variables: { limit, offset, order_by: remoteOrderBy, where },
-          }),
-        });
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        );
 
-        if (!response.ok) {
-          throw new Error(`PokeAPI request failed: ${response.statusText}`);
-        }
-
-        const result = await response.json();
+        const result = response.data;
 
         if (result.errors) {
           throw new Error(`GraphQL errors: ${JSON.stringify(result.errors)}`);
@@ -285,6 +285,9 @@ const resolvers = {
 
         return pokemons;
       } catch (error) {
+        if (axios.isAxiosError(error)) {
+          throw new Error(`Failed to fetch pokemons: ${error.response?.statusText || error.message}`);
+        }
         throw new Error(`Failed to fetch pokemons: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     },
