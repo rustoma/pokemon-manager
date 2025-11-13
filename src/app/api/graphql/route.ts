@@ -1,6 +1,7 @@
 import { ApolloServer } from '@apollo/server';
 import { startServerAndCreateNextHandler } from '@as-integrations/next';
 import bcrypt from 'bcrypt';
+import { print } from 'graphql';
 import { gql } from 'graphql-tag';
 import GraphQLJSON from 'graphql-type-json';
 import jwt from 'jsonwebtoken';
@@ -14,9 +15,23 @@ import type { NextRequest } from 'next/server';
 const typeDefs = gql`
   scalar JSON
 
+  input pokemon_bool_exp {
+    id: Int_comparison_exp
+  }
+
+  input Int_comparison_exp {
+    _eq: Int
+    _neq: Int
+    _gt: Int
+    _gte: Int
+    _lt: Int
+    _lte: Int
+  }
+
   type Query {
     hello: String
     pokemons(limit: Int = 10, offset: Int = 0): [Pokemon]
+    pokemon(where: pokemon_bool_exp!): Pokemon
   }
 
   type Mutation {
@@ -57,8 +72,57 @@ const resolvers = {
       }
       return `Hello, ${context.user.email}`;
     },
+    pokemon: async (_: unknown, { where }: { where: { id: { _eq: number } } }) => {
+      const query = gql`
+        query GetPokemon($where: pokemon_bool_exp!, $limit: Int!) {
+          pokemon(where: $where, limit: $limit) {
+            id
+            name
+            height
+            weight
+            pokemonsprites {
+              id
+              sprites
+            }
+            pokemontypes {
+              type {
+                id
+                name
+              }
+            }
+          }
+        }
+      `;
+
+      try {
+        const response = await fetch(API_ROUTES.POKEAPI, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            query: print(query),
+            variables: { where, limit: 1 },
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`PokeAPI request failed: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+
+        if (result.errors) {
+          throw new Error(`GraphQL errors: ${JSON.stringify(result.errors)}`);
+        }
+
+        return result.data?.pokemon?.[0] ?? null;
+      } catch (error) {
+        throw new Error(`Failed to fetch pokemon: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    },
     pokemons: async (_: unknown, { limit = 10, offset = 0 }: { limit?: number; offset?: number }) => {
-      const query = `
+      const query = gql`
         query GetPokemons($limit: Int!, $offset: Int!) {
           pokemon(limit: $limit, offset: $offset) {
             id
@@ -86,7 +150,7 @@ const resolvers = {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            query,
+            query: print(query),
             variables: { limit, offset },
           }),
         });
