@@ -5,7 +5,6 @@ import { useMemo } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { error } from 'console';
 
 const schema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
