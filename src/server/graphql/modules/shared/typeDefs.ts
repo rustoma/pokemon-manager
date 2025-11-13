@@ -32,7 +32,7 @@ const typeDefs = gql`
   }
 
   input PokemonFilter {
-    name: String_comparison_exp
+    name: String
     minHeight: Int
     maxHeight: Int
     minWeight: Int
