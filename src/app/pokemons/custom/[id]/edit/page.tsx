@@ -1,5 +1,4 @@
-import gql from 'graphql-tag';
-
+import { GET_CUSTOM_POKEMON } from '@/client/graphql/customPokemon/queries';
 import client from '@/lib/apolloClient';
 import { EditCustomPokemonPage } from '@/pages/EditCustomPokemonPage';
 
@@ -16,17 +15,7 @@ export default async function EditCustomPokemon({ params }: { params: Promise<{ 
   const numericId = Number(id);
 
   const result = await client.query<{ customPokemon: CustomPokemon | null }>({
-    query: gql`
-      query CustomPokemon($id: Int!) {
-        customPokemon(id: $id) {
-          id
-          name
-          height
-          weight
-          imagePath
-        }
-      }
-    `,
+    query: GET_CUSTOM_POKEMON,
     variables: { id: numericId },
   });
 

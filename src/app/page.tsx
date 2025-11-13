@@ -1,5 +1,4 @@
-import gql from 'graphql-tag';
-
+import { GET_POKEMONS } from '@/client/graphql/pokemon/queries';
 import client from '@/lib/apolloClient';
 import { HomePage } from '@/pages/HomePage';
 
@@ -45,24 +44,7 @@ export default async function Home({
   const offset = (numericPage - 1) * numericLimit;
 
   const { data } = await client.query<{ pokemons: Pokemon[] }>({
-    query: gql`
-      query GetPokemons($limit: Int!, $offset: Int!, $order_by: PokemonOrder, $filter: PokemonFilter) {
-        pokemons(limit: $limit, offset: $offset, order_by: $order_by, filter: $filter) {
-          id
-          name
-          pokemonsprites {
-            id
-            sprites
-          }
-          pokemontypes {
-            type {
-              id
-              name
-            }
-          }
-        }
-      }
-    `,
+    query: GET_POKEMONS,
     variables: { limit: numericLimit, offset, order_by, filter: hasFilter ? filter : undefined },
   });
 

@@ -1,23 +1,13 @@
-import gql from 'graphql-tag';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+import { CREATE_CUSTOM_POKEMON } from '@/client/graphql/customPokemon/mutations';
 import { CLIENT_ROUTES } from '@/consts/clientRoutes';
 import { CustomPokemonForm } from '@/features/pokemons/components/custom/CustomPokemonForm';
 import client from '@/lib/apolloClient';
 
 export const NewCustomPokemonPage = () => {
   const router = useRouter();
-
-  const CREATE_CUSTOM = gql`
-    mutation CreateCustom($name: String!, $height: Int!, $weight: Int!, $imagePath: String!) {
-      createCustomPokemon(name: $name, height: $height, weight: $weight, imagePath: $imagePath) {
-        id
-        name
-        imagePath
-      }
-    }
-  `;
 
   return (
     <div className="container mx-auto max-w-3xl px-4 py-6">
@@ -32,7 +22,7 @@ export const NewCustomPokemonPage = () => {
         submitLabel="Create"
         onSubmit={async ({ name, height, weight, imagePath }) => {
           await client.mutate({
-            mutation: CREATE_CUSTOM,
+            mutation: CREATE_CUSTOM_POKEMON,
             variables: { name, height, weight, imagePath },
           });
           router.push(CLIENT_ROUTES.CUSTOM_POKEMONS());

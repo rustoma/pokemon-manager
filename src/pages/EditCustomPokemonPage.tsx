@@ -1,9 +1,9 @@
 'use client';
 
-import gql from 'graphql-tag';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+import { UPDATE_CUSTOM_POKEMON } from '@/client/graphql/customPokemon/mutations';
 import { CLIENT_ROUTES } from '@/consts/clientRoutes';
 import { CustomPokemonForm } from '@/features/pokemons/components/custom/CustomPokemonForm';
 import client from '@/lib/apolloClient';
@@ -35,16 +35,6 @@ export const EditCustomPokemonPage = ({ pokemon }: { pokemon: CustomPokemon | nu
     );
   }
 
-  const UPDATE_CUSTOM = gql`
-    mutation UpdateCustom($id: Int!, $name: String!, $height: Int!, $weight: Int!, $imagePath: String!) {
-      updateCustomPokemon(id: $id, name: $name, height: $height, weight: $weight, imagePath: $imagePath) {
-        id
-        name
-        imagePath
-      }
-    }
-  `;
-
   return (
     <div className="container mx-auto max-w-3xl px-4 py-6">
       <div className="mb-6 flex items-center justify-between">
@@ -66,7 +56,7 @@ export const EditCustomPokemonPage = ({ pokemon }: { pokemon: CustomPokemon | nu
         }}
         onSubmit={async ({ name, height, weight, imagePath }) => {
           await client.mutate({
-            mutation: UPDATE_CUSTOM,
+            mutation: UPDATE_CUSTOM_POKEMON,
             variables: { id: pokemon.id, name, height, weight, imagePath },
           });
           router.push(CLIENT_ROUTES.CUSTOM_POKEMONS());

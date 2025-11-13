@@ -1,9 +1,10 @@
 'use client';
 
-import gql from 'graphql-tag';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+import { DELETE_CUSTOM_POKEMON } from '@/client/graphql/customPokemon/mutations';
+import { CLIENT_ROUTES } from '@/consts/clientRoutes';
 import client from '@/lib/apolloClient';
 
 import type { CustomPokemon } from '@prisma/generated/prisma/client';
@@ -15,17 +16,9 @@ interface Props {
 export const CustomPokemonsPage = ({ pokemons }: Props) => {
   const router = useRouter();
 
-  const DELETE_MUTATION = gql`
-    mutation DeleteCustom($id: Int!) {
-      deleteCustomPokemon(id: $id) {
-        id
-      }
-    }
-  `;
-
   const handleDelete = async (id: number) => {
     if (!confirm('Delete this custom pokemon?')) return;
-    await client.mutate({ mutation: DELETE_MUTATION, variables: { id } });
+    await client.mutate({ mutation: DELETE_CUSTOM_POKEMON, variables: { id } });
     router.refresh();
   };
 
@@ -33,7 +26,9 @@ export const CustomPokemonsPage = ({ pokemons }: Props) => {
     <div className="container mx-auto px-4 py-6">
       <div className="mb-4 flex items-center justify-between">
         <h1 className="text-xl font-semibold">Custom Pokemons</h1>
-        <Link href="/pokemons/custom/new" className="rounded bg-blue-600 px-3 py-2 text-white hover:bg-blue-700">
+        <Link
+          href={CLIENT_ROUTES.CUSTOM_POKEMON_NEW()}
+          className="rounded bg-blue-600 px-3 py-2 text-white hover:bg-blue-700">
           Add Custom Pokemon
         </Link>
       </div>
@@ -53,7 +48,7 @@ export const CustomPokemonsPage = ({ pokemons }: Props) => {
                 <div className="flex gap-2">
                   <Link
                     className="rounded border border-gray-300 px-2 py-1 text-sm hover:bg-gray-50"
-                    href={`/pokemons/custom/${p.id}/edit`}>
+                    href={CLIENT_ROUTES.CUSTOM_POKEMON_EDIT(p.id.toString())}>
                     Edit
                   </Link>
                   <button
