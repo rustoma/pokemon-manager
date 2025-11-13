@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -18,6 +20,7 @@ type CustomPokemon = {
 
 export const EditCustomPokemonPage = ({ pokemon }: { pokemon: CustomPokemon | null }) => {
   const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
 
   if (!pokemon) {
     return (
@@ -55,12 +58,17 @@ export const EditCustomPokemonPage = ({ pokemon }: { pokemon: CustomPokemon | nu
           imagePath: pokemon.imagePath,
         }}
         onSubmit={async ({ name, height, weight, imagePath }) => {
-          await client.mutate({
-            mutation: UPDATE_CUSTOM_POKEMON,
-            variables: { id: pokemon.id, name, height, weight, imagePath },
-          });
-          router.push(CLIENT_ROUTES.CUSTOM_POKEMONS());
+          try {
+            await client.mutate({
+              mutation: UPDATE_CUSTOM_POKEMON,
+              variables: { id: pokemon.id, name, height, weight, imagePath },
+            });
+            router.push(CLIENT_ROUTES.CUSTOM_POKEMONS());
+          } catch (error) {
+            setError(error instanceof Error ? error.message : 'An unknown error occurred');
+          }
         }}
+        error={error}
       />
     </div>
   );

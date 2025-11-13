@@ -1,3 +1,5 @@
+import { GraphQLError } from 'graphql';
+
 import prisma from '@/lib/prisma';
 import { customPokemonCreateSchema, customPokemonUpdateSchema } from '@/schemas/customPokemon';
 
@@ -18,7 +20,11 @@ const resolvers = {
     createCustomPokemon: async (
       _: unknown,
       { name, height, weight, imagePath }: { name: string; height: number; weight: number; imagePath: string },
+      context: { user: { id: string } },
     ) => {
+      if (!context.user) {
+        throw new GraphQLError('Not authenticated');
+      }
       const parsed = customPokemonCreateSchema.parse({ name, height, weight, imagePath });
       const customPokemon = await prisma.customPokemon.create({
         data: parsed,
@@ -34,7 +40,11 @@ const resolvers = {
         weight,
         imagePath,
       }: { id: number; name: string; height: number; weight: number; imagePath: string },
+      context: { user: { id: string } },
     ) => {
+      if (!context.user) {
+        throw new GraphQLError('Not authenticated');
+      }
       const parsed = customPokemonUpdateSchema.parse({ id, name, height, weight, imagePath });
       const customPokemon = await prisma.customPokemon.update({
         where: { id },
@@ -42,7 +52,10 @@ const resolvers = {
       });
       return customPokemon;
     },
-    deleteCustomPokemon: async (_: unknown, { id }: { id: number }) => {
+    deleteCustomPokemon: async (_: unknown, { id }: { id: number }, context: { user: { id: string } }) => {
+      if (!context.user) {
+        throw new GraphQLError('Not authenticated');
+      }
       const customPokemon = await prisma.customPokemon.delete({
         where: { id },
       });

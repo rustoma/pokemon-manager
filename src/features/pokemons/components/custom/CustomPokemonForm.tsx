@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { error } from 'console';
 
 const schema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -25,9 +26,10 @@ interface CustomPokemonFormProps {
   defaultValues?: Partial<CustomPokemonFormValues>;
   submitLabel?: string;
   onSubmit?: (values: CustomPokemonFormValues) => Promise<void> | void;
+  error?: string | null;
 }
 
-export function CustomPokemonForm({ defaultValues, submitLabel = 'Create', onSubmit }: CustomPokemonFormProps) {
+export function CustomPokemonForm({ defaultValues, submitLabel = 'Create', onSubmit, error }: CustomPokemonFormProps) {
   const initialValues = useMemo<CustomPokemonFormValues>(
     () => ({
       name: defaultValues?.name ?? '',
@@ -127,6 +129,7 @@ export function CustomPokemonForm({ defaultValues, submitLabel = 'Create', onSub
           {isSubmitting ? 'Submitting...' : submitLabel}
         </button>
       </div>
+      {error && <p className="text-red-600">{error}</p>}
     </form>
   );
 }

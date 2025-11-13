@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -8,6 +10,7 @@ import client from '@/lib/apolloClient';
 
 export const NewCustomPokemonPage = () => {
   const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
 
   return (
     <div className="container mx-auto max-w-3xl px-4 py-6">
@@ -21,12 +24,17 @@ export const NewCustomPokemonPage = () => {
       <CustomPokemonForm
         submitLabel="Create"
         onSubmit={async ({ name, height, weight, imagePath }) => {
-          await client.mutate({
-            mutation: CREATE_CUSTOM_POKEMON,
-            variables: { name, height, weight, imagePath },
-          });
-          router.push(CLIENT_ROUTES.CUSTOM_POKEMONS());
+          try {
+            await client.mutate({
+              mutation: CREATE_CUSTOM_POKEMON,
+              variables: { name, height, weight, imagePath },
+            });
+            router.push(CLIENT_ROUTES.CUSTOM_POKEMONS());
+          } catch (error) {
+            setError(error instanceof Error ? error.message : 'An unknown error occurred');
+          }
         }}
+        error={error}
       />
     </div>
   );
