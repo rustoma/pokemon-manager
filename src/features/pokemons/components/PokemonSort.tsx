@@ -17,13 +17,13 @@ export const PokemonSort = () => {
   );
 
   return (
-    <div className="flex px-4 py-6 items-center gap-2 justify-end container mx-auto">
+    <div className="flex items-center gap-2 justify-end">
       <label htmlFor="sort" className="text-[#ADADAD] font-medium">
         Sort by:
       </label>
       <select
         id="sort"
-        className="bg-white flex-1 border-b border-white p-2 focus:outline-none h-10 max-w-40"
+        className="bg-[#313131] text-white flex-1 border-b border-white p-2 focus:outline-none h-10 max-w-40 px-2"
         onChange={handleSortChange}>
         <option value="name">Name</option>
         <option value="height">Height</option>
