@@ -2,7 +2,10 @@ import type { ReactNode } from 'react';
 
 import { Geist, Geist_Mono } from 'next/font/google';
 
+import { UserProvider } from '@/features/auth/providers/UserProvider';
+
 import type { Metadata } from 'next';
+
 import './globals.css';
 
 const geistSans = Geist({
@@ -30,7 +33,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <main className="flex flex-col">{children}</main>
+        <UserProvider>
+          <main className="flex flex-col">{children}</main>
+        </UserProvider>
       </body>
     </html>
   );
