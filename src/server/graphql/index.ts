@@ -13,6 +13,7 @@ import pokemonResolvers from '@/server/graphql/modules/pokemon/resolvers';
 import pokemonTypeDefs from '@/server/graphql/modules/pokemon/typeDefs';
 import sharedTypeDefs from '@/server/graphql/modules/shared/typeDefs';
 
+import type { GraphQLContext } from '@/server/graphql/context';
 import type { NextRequest } from 'next/server';
 
 const typeDefs = gql`
@@ -22,22 +23,14 @@ const typeDefs = gql`
   ${print(sharedTypeDefs)}
 `;
 
-// Shallow-merge resolvers per module
 const { Query: pokemonQuery } = pokemonResolvers;
-const { Query: authQuery, Mutation: authMutation } = authResolvers as {
-  Query: Record<string, unknown>;
-  Mutation: Record<string, unknown>;
-};
-const { Query: customQuery, Mutation: customMutation } = customPokemonResolvers as {
-  Query: Record<string, unknown>;
-  Mutation: Record<string, unknown>;
-};
+const { Mutation: authMutation } = authResolvers;
+const { Query: customQuery, Mutation: customMutation } = customPokemonResolvers;
 
 const resolvers = {
   JSON: GraphQLJSON,
   Query: {
     ...pokemonQuery,
-    ...authQuery,
     ...customQuery,
   },
   Mutation: {
@@ -46,11 +39,11 @@ const resolvers = {
   },
 };
 
-const apolloServer = new ApolloServer({
+const apolloServer = new ApolloServer<GraphQLContext>({
   typeDefs,
   resolvers,
 });
 
-export const handler = startServerAndCreateNextHandler<NextRequest>(apolloServer, {
+export const handler = startServerAndCreateNextHandler<NextRequest, GraphQLContext>(apolloServer, {
   context: buildContext,
 });

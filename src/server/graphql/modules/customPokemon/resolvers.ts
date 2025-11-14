@@ -3,6 +3,8 @@ import { GraphQLError } from 'graphql';
 import prisma from '@/lib/prisma';
 import { customPokemonCreateSchema, customPokemonUpdateSchema } from '@/schemas/customPokemon';
 
+import type { GraphQLContext } from '@/server/graphql/context';
+
 const resolvers = {
   Query: {
     customPokemons: async () => {
@@ -20,7 +22,7 @@ const resolvers = {
     createCustomPokemon: async (
       _: unknown,
       { name, height, weight, imagePath }: { name: string; height: number; weight: number; imagePath: string },
-      context: { user: { id: string } },
+      context: GraphQLContext,
     ) => {
       if (!context.user) {
         throw new GraphQLError('Not authenticated');
@@ -40,7 +42,7 @@ const resolvers = {
         weight,
         imagePath,
       }: { id: number; name: string; height: number; weight: number; imagePath: string },
-      context: { user: { id: string } },
+      context: GraphQLContext,
     ) => {
       if (!context.user) {
         throw new GraphQLError('Not authenticated');

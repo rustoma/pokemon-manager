@@ -5,14 +5,6 @@ import jwt from 'jsonwebtoken';
 import prisma from '@/lib/prisma';
 
 const resolvers = {
-  Query: {
-    hello: (_: unknown, __: unknown, context: { user: { email: string } | null }) => {
-      if (!context.user) {
-        throw new GraphQLError('Not authenticated');
-      }
-      return `Hello, ${context.user.email}`;
-    },
-  },
   Mutation: {
     signup: async (_: unknown, { email, password }: { email: string; password: string }) => {
       const existingUser = await prisma.user.findUnique({

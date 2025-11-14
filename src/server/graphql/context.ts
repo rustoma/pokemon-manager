@@ -3,7 +3,11 @@ import jwt from 'jsonwebtoken';
 
 import type { NextRequest } from 'next/server';
 
-export const buildContext = async (req: NextRequest) => {
+export type GraphQLContext = {
+  user: { id: string } | null;
+};
+
+export const buildContext = async (req: NextRequest): Promise<GraphQLContext> => {
   const tokenHeader = req.headers.get('authorization') ?? '';
   const token = tokenHeader.replace(/^bearer\s+/i, '');
 
@@ -16,7 +20,10 @@ export const buildContext = async (req: NextRequest) => {
       }
 
       const decoded = jwt.verify(token, JWT_SECRET);
-      return { user: decoded as unknown };
+
+      if (typeof decoded === 'object' && decoded !== null && 'userId' in decoded && typeof decoded.userId === 'string') {
+        return { user: { id: decoded.userId } };
+      }
     }
   } catch {
     return { user: null };
