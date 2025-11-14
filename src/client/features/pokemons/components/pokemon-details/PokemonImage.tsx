@@ -15,4 +15,3 @@ export const PokemonImage = ({ pokemon }: PokemonImageProps) => {
     </div>
   );
 };
-

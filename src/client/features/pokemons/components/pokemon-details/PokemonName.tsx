@@ -13,4 +13,3 @@ export const PokemonName = ({ pokemon }: PokemonNameProps) => {
     </h1>
   );
 };
-
