@@ -11,6 +11,7 @@ import client from '@/lib/apolloClient';
 export const NewCustomPokemonPage = () => {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <div className="container mx-auto max-w-3xl px-4 py-6">
@@ -22,8 +23,10 @@ export const NewCustomPokemonPage = () => {
       </div>
 
       <CustomPokemonForm
-        submitLabel="Create"
+        submitLabel={isLoading ? 'Creating...' : 'Create'}
         onSubmit={async ({ name, height, weight, imagePath }) => {
+          setIsLoading(true);
+          setError(null);
           try {
             await client.mutate({
               mutation: CREATE_CUSTOM_POKEMON,
@@ -32,6 +35,7 @@ export const NewCustomPokemonPage = () => {
             router.push(CLIENT_ROUTES.CUSTOM_POKEMONS());
           } catch (error) {
             setError(error instanceof Error ? error.message : 'An unknown error occurred');
+            setIsLoading(false);
           }
         }}
         error={error}

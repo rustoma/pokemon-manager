@@ -21,6 +21,7 @@ type CustomPokemon = {
 export const EditCustomPokemonPage = ({ pokemon }: { pokemon: CustomPokemon | null }) => {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   if (!pokemon) {
     return (
@@ -50,7 +51,7 @@ export const EditCustomPokemonPage = ({ pokemon }: { pokemon: CustomPokemon | nu
       </div>
 
       <CustomPokemonForm
-        submitLabel="Save"
+        submitLabel={isLoading ? 'Saving...' : 'Save'}
         defaultValues={{
           name: pokemon.name,
           height: pokemon.height,
@@ -58,6 +59,8 @@ export const EditCustomPokemonPage = ({ pokemon }: { pokemon: CustomPokemon | nu
           imagePath: pokemon.imagePath,
         }}
         onSubmit={async ({ name, height, weight, imagePath }) => {
+          setIsLoading(true);
+          setError(null);
           try {
             await client.mutate({
               mutation: UPDATE_CUSTOM_POKEMON,
@@ -66,6 +69,7 @@ export const EditCustomPokemonPage = ({ pokemon }: { pokemon: CustomPokemon | nu
             router.push(CLIENT_ROUTES.CUSTOM_POKEMONS());
           } catch (error) {
             setError(error instanceof Error ? error.message : 'An unknown error occurred');
+            setIsLoading(false);
           }
         }}
         error={error}

@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -17,11 +19,22 @@ interface Props {
 export const CustomPokemonsPage = ({ pokemons }: Props) => {
   const router = useRouter();
   const { isAuthenticated, signOut, signInDemoUser } = useUser();
+  const [deletingIds, setDeletingIds] = useState<Set<number>>(new Set());
 
   const handleDelete = async (id: number) => {
     if (!confirm('Delete this custom pokemon?')) return;
-    await client.mutate({ mutation: DELETE_CUSTOM_POKEMON, variables: { id } });
-    router.refresh();
+    setDeletingIds((prev) => new Set(prev).add(id));
+    try {
+      await client.mutate({ mutation: DELETE_CUSTOM_POKEMON, variables: { id } });
+      router.refresh();
+    } catch (error) {
+      console.error('Failed to delete pokemon:', error);
+      setDeletingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }
   };
 
   return (
@@ -69,9 +82,10 @@ export const CustomPokemonsPage = ({ pokemons }: Props) => {
                   </Link>
                   <button
                     onClick={() => handleDelete(p.id)}
-                    className="rounded bg-red-600 px-2 py-1 text-sm text-white hover:bg-red-700"
+                    disabled={deletingIds.has(p.id)}
+                    className="rounded bg-red-600 px-2 py-1 text-sm text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     type="button">
-                    Delete
+                    {deletingIds.has(p.id) ? 'Deleting...' : 'Delete'}
                   </button>
                 </div>
               </div>
