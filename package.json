@@ -12,20 +12,45 @@
     "format": "prettier  --check './**/*.{js,jsx,ts,tsx,css,scss,md,json}' --config ./.prettierrc.mjs --ignore-path ./.prettierignore",
     "format:fix": "prettier --write './**/*.{js,jsx,ts,tsx,css,scss,md,json}'  --config ./.prettierrc.mjs --ignore-path ./.prettierignore",
     "compile": "tsc --noEmit",
-    "check": "yarn lint && yarn format && yarn compile"
+    "check": "yarn lint && yarn format && yarn compile",
+    "setup_docker_dev": "cd developers_resources/dev && docker-compose -f docker-compose.dev.yml up -d",
+    "stop_docker_dev": "cd developers_resources/dev && docker-compose -f docker-compose.dev.yml down -v",
+    "prisma:clean": "rm -rf prisma/generated",
+    "prisma:generate": "npx prisma generate",
+    "migrations:generate": "npx prisma migrate dev --create-only",
+    "migrations:apply": "npx prisma migrate deploy && prisma generate"
   },
   "dependencies": {
+    "@apollo/client": "^4.0.9",
+    "@apollo/server": "^5.1.0",
+    "@as-integrations/next": "^4.1.0",
+    "@heroicons/react": "^2.2.0",
+    "@hookform/resolvers": "^5.2.2",
+    "@prisma/client": "^6.19.0",
     "@tailwindcss/postcss": "^4.1.17",
+    "@yaacovcr/transform": "^0.0.8",
+    "axios": "^1.13.2",
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.2.3",
+    "graphql": "^17.0.0-alpha.9",
+    "graphql-tag": "^2.12.6",
+    "graphql-type-json": "^0.3.2",
+    "jsonwebtoken": "^9.0.2",
     "next": "16.0.1",
     "postcss": "^8.5.6",
     "react": "19.2.0",
     "react-dom": "19.2.0",
-    "tailwindcss": "^4.1.17"
+    "react-hook-form": "^7.66.0",
+    "rxjs": "^7.8.2",
+    "tailwindcss": "^4.1.17",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
     "@eslint/eslintrc": "^3.3.1",
+    "@types/bcrypt": "^6.0.0",
+    "@types/jsonwebtoken": "^9",
     "@types/node": "^24.10.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -39,7 +64,10 @@
     "eslint-plugin-unicorn": "^62.0.0",
     "globals": "^16.5.0",
     "husky": "^9.1.7",
+    "install": "^0.13.0",
     "prettier": "^3.6.2",
+    "prisma": "^6.19.0",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   }
 }
