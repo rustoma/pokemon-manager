@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { CLIENT_ROUTES } from '@/client/consts/clientRoutes';
-import { CustomPokemonForm } from '@/client/features/pokemons/components/custom/CustomPokemonForm';
+import {
+  CustomPokemonForm,
+  type CustomPokemonFormValues,
+} from '@/client/features/pokemons/components/custom/CustomPokemonForm';
 import { CREATE_CUSTOM_POKEMON } from '@/client/graphql/customPokemon/mutations';
 import client from '@/lib/apolloClient';
 
@@ -12,6 +15,24 @@ export const NewCustomPokemonPage = () => {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = useCallback(
+    async ({ name, height, weight, imagePath }: CustomPokemonFormValues) => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        await client.mutate({
+          mutation: CREATE_CUSTOM_POKEMON,
+          variables: { name, height, weight, imagePath },
+        });
+        router.push(CLIENT_ROUTES.CUSTOM_POKEMONS());
+      } catch (error) {
+        setError(error instanceof Error ? error.message : 'An unknown error occurred');
+        setIsLoading(false);
+      }
+    },
+    [router],
+  );
 
   return (
     <div className="container mx-auto max-w-3xl px-4 py-6">
@@ -22,24 +43,7 @@ export const NewCustomPokemonPage = () => {
         </Link>
       </div>
 
-      <CustomPokemonForm
-        submitLabel={isLoading ? 'Creating...' : 'Create'}
-        onSubmit={async ({ name, height, weight, imagePath }) => {
-          setIsLoading(true);
-          setError(null);
-          try {
-            await client.mutate({
-              mutation: CREATE_CUSTOM_POKEMON,
-              variables: { name, height, weight, imagePath },
-            });
-            router.push(CLIENT_ROUTES.CUSTOM_POKEMONS());
-          } catch (error) {
-            setError(error instanceof Error ? error.message : 'An unknown error occurred');
-            setIsLoading(false);
-          }
-        }}
-        error={error}
-      />
+      <CustomPokemonForm submitLabel={isLoading ? 'Creating...' : 'Create'} onSubmit={handleSubmit} error={error} />
     </div>
   );
 };
