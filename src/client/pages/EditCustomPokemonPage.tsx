@@ -1,7 +1,8 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 
+import { useMutation } from '@apollo/client/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -11,7 +12,6 @@ import {
   type CustomPokemonFormValues,
 } from '@/client/features/pokemons/components/custom/CustomPokemonForm';
 import { UPDATE_CUSTOM_POKEMON } from '@/client/graphql/customPokemon/mutations';
-import client from '@/lib/apolloClient';
 
 type CustomPokemon = {
   id: number;
@@ -23,27 +23,20 @@ type CustomPokemon = {
 
 export const EditCustomPokemonPage = ({ pokemon }: { pokemon: CustomPokemon | null }) => {
   const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [updateCustomPokemon, { loading, error }] = useMutation(UPDATE_CUSTOM_POKEMON);
 
   const handleSubmit = useCallback(
     async ({ name, height, weight, imagePath }: CustomPokemonFormValues) => {
       if (!pokemon) return;
 
-      setIsLoading(true);
-      setError(null);
-      try {
-        await client.mutate({
-          mutation: UPDATE_CUSTOM_POKEMON,
-          variables: { id: pokemon.id, name, height, weight, imagePath },
-        });
-        router.push(CLIENT_ROUTES.CUSTOM_POKEMONS());
-      } catch (error) {
-        setError(error instanceof Error ? error.message : 'An unknown error occurred');
-        setIsLoading(false);
-      }
+      await updateCustomPokemon({
+        variables: { id: pokemon.id, name, height, weight, imagePath },
+        onCompleted: () => {
+          router.push(CLIENT_ROUTES.CUSTOM_POKEMONS());
+        },
+      });
     },
-    [pokemon, router],
+    [pokemon, router, updateCustomPokemon],
   );
 
   if (!pokemon) {
@@ -74,7 +67,7 @@ export const EditCustomPokemonPage = ({ pokemon }: { pokemon: CustomPokemon | nu
       </div>
 
       <CustomPokemonForm
-        submitLabel={isLoading ? 'Saving...' : 'Save'}
+        submitLabel={loading ? 'Saving...' : 'Save'}
         defaultValues={{
           name: pokemon.name,
           height: pokemon.height,
@@ -82,7 +75,7 @@ export const EditCustomPokemonPage = ({ pokemon }: { pokemon: CustomPokemon | nu
           imagePath: pokemon.imagePath,
         }}
         onSubmit={handleSubmit}
-        error={error}
+        error={error ? error.message : undefined}
       />
     </div>
   );
