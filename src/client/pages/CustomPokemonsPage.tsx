@@ -42,11 +42,13 @@ export const CustomPokemonsPage = ({ pokemons }: Props) => {
       <div className="mb-4 flex items-center justify-between">
         <h1 className="text-xl font-semibold">Custom Pokemons</h1>
         <div className="flex items-center gap-2">
-          <Link
-            href={CLIENT_ROUTES.CUSTOM_POKEMON_NEW()}
-            className="rounded bg-blue-600 px-3 py-2 text-white hover:bg-blue-700">
-            Add Custom Pokemon
-          </Link>
+          {isAuthenticated && (
+            <Link
+              href={CLIENT_ROUTES.CUSTOM_POKEMON_NEW()}
+              className="rounded bg-blue-600 px-3 py-2 text-white hover:bg-blue-700">
+              Add Custom Pokemon
+            </Link>
+          )}
           {isAuthenticated ? (
             <button onClick={signOut} className="rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700 cursor-pointer">
               Sign Out
@@ -74,20 +76,22 @@ export const CustomPokemonsPage = ({ pokemons }: Props) => {
 
               <div className="flex flex-col gap-2">
                 <h3 className="text-lg font-bold">{p.name}</h3>
-                <div className="flex gap-2">
-                  <Link
-                    className="rounded border border-gray-300 px-2 py-1 text-sm hover:bg-gray-50"
-                    href={CLIENT_ROUTES.CUSTOM_POKEMON_EDIT(p.id.toString())}>
-                    Edit
-                  </Link>
-                  <button
-                    onClick={() => handleDelete(p.id)}
-                    disabled={deletingIds.has(p.id)}
-                    className="rounded bg-red-600 px-2 py-1 text-sm text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                    type="button">
-                    {deletingIds.has(p.id) ? 'Deleting...' : 'Delete'}
-                  </button>
-                </div>
+                {isAuthenticated && (
+                  <div className="flex gap-2">
+                    <Link
+                      className="rounded border border-gray-300 px-2 py-1 text-sm hover:bg-gray-50"
+                      href={CLIENT_ROUTES.CUSTOM_POKEMON_EDIT(p.id.toString())}>
+                      Edit
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(p.id)}
+                      disabled={deletingIds.has(p.id)}
+                      className="rounded bg-red-600 px-2 py-1 text-sm text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      type="button">
+                      {deletingIds.has(p.id) ? 'Deleting...' : 'Delete'}
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           ))}
