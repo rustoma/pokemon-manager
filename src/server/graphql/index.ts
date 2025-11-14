@@ -23,7 +23,7 @@ const typeDefs = gql`
 `;
 
 // Shallow-merge resolvers per module
-const { Query: pokemonQuery } = pokemonResolvers as { Query: Record<string, unknown> };
+const { Query: pokemonQuery } = pokemonResolvers;
 const { Query: authQuery, Mutation: authMutation } = authResolvers as {
   Query: Record<string, unknown>;
   Mutation: Record<string, unknown>;

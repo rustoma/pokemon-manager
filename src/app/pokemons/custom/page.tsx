@@ -7,6 +7,7 @@ import type { CustomPokemon } from '@prisma/generated/prisma/client';
 export default async function CustomPokemonsListPage() {
   const { data } = await client.query<{ customPokemons: CustomPokemon[] }>({
     query: GET_CUSTOM_POKEMONS,
+    fetchPolicy: 'no-cache',
   });
 
   return <CustomPokemonsPage pokemons={data?.customPokemons ?? []} />;

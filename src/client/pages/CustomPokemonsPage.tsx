@@ -38,6 +38,7 @@ export const CustomPokemonsPage = ({ pokemons }: Props) => {
             <div key={p.id} className="flex flex-col gap-4">
               <div className="flex flex-col">
                 <div className="relative bg-[#F2F2F2] w-48 h-48 flex items-center justify-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={p.imagePath} alt={p.name} className="max-h-48 max-w-48 object-contain" />
                 </div>
                 <span className="text-sm text-gray-500">#{p.id}</span>
