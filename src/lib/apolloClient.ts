@@ -1,4 +1,5 @@
-import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';
+import { ApolloClient, InMemoryCache, HttpLink, ApolloLink } from '@apollo/client';
+import { SetContextLink } from '@apollo/client/link/context';
 
 import { API_ROUTES } from '@/client/consts/apiRoutes';
 
@@ -11,15 +12,28 @@ const getGraphQLUri = () => {
   return API_ROUTES.GRAPHQL;
 };
 
+const httpLink = new HttpLink({
+  uri: getGraphQLUri(),
+  fetch,
+});
+
+const authLink = new SetContextLink((prevContext) => {
+  let token: string | null = null;
+  if (globalThis.window !== undefined) {
+    token = localStorage.getItem('token');
+  }
+
+  return {
+    headers: {
+      ...prevContext.headers,
+      authorization: token ? `Bearer ${token}` : '',
+    },
+  };
+});
+
 const client = new ApolloClient({
   ssrMode: globalThis.window === undefined,
-  link: new HttpLink({
-    uri: getGraphQLUri(),
-    fetch,
-    headers: {
-      authorization: globalThis.window === undefined ? '' : `Bearer ${localStorage.getItem('token')}`,
-    },
-  }),
+  link: ApolloLink.from([authLink, httpLink]),
   cache: new InMemoryCache(),
 });
 

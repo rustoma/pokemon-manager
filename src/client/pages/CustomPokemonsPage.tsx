@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { CLIENT_ROUTES } from '@/client/consts/clientRoutes';
+import { useUser } from '@/client/features/auth/hooks/useUser';
 import { DELETE_CUSTOM_POKEMON } from '@/client/graphql/customPokemon/mutations';
 import client from '@/lib/apolloClient';
 
@@ -15,6 +16,7 @@ interface Props {
 
 export const CustomPokemonsPage = ({ pokemons }: Props) => {
   const router = useRouter();
+  const { isAuthenticated, signOut, signInDemoUser } = useUser();
 
   const handleDelete = async (id: number) => {
     if (!confirm('Delete this custom pokemon?')) return;
@@ -26,11 +28,24 @@ export const CustomPokemonsPage = ({ pokemons }: Props) => {
     <div className="container mx-auto px-4 py-6">
       <div className="mb-4 flex items-center justify-between">
         <h1 className="text-xl font-semibold">Custom Pokemons</h1>
-        <Link
-          href={CLIENT_ROUTES.CUSTOM_POKEMON_NEW()}
-          className="rounded bg-blue-600 px-3 py-2 text-white hover:bg-blue-700">
-          Add Custom Pokemon
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href={CLIENT_ROUTES.CUSTOM_POKEMON_NEW()}
+            className="rounded bg-blue-600 px-3 py-2 text-white hover:bg-blue-700">
+            Add Custom Pokemon
+          </Link>
+          {isAuthenticated ? (
+            <button onClick={signOut} className="rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700 cursor-pointer">
+              Sign Out
+            </button>
+          ) : (
+            <button
+              onClick={signInDemoUser}
+              className="rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700 cursor-pointer">
+              Sign In
+            </button>
+          )}
+        </div>
       </div>
       <div className="py-10">
         <div className="flex flex-wrap gap-x-4 gap-y-8">
