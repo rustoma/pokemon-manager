@@ -7,6 +7,16 @@ git clone https://github.com/rustoma/pokemon-manager.git
 cd pokemon-manager
 ```
 
+### Environment Variables
+
+Create a `.env` file in the root directory and copy variables from `env.example`:
+
+```bash
+cp env.example .env
+```
+
+Edit the `.env` file with your configuration values.
+
 ### Database Setup
 
 You can use Docker for fast database setup:
