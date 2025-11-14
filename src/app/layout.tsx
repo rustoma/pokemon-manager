@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { Geist, Geist_Mono } from 'next/font/google';
 
 import { UserProvider } from '@/client/features/auth/providers/UserProvider';
+import { PokemonHeader } from '@/client/features/pokemons/components/PokemonHeader';
 
 import type { Metadata } from 'next';
 
@@ -34,7 +35,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <UserProvider>
-          <main className="flex flex-col">{children}</main>
+          <main className="flex flex-col">
+            <PokemonHeader />
+            {children}
+          </main>
         </UserProvider>
       </body>
     </html>

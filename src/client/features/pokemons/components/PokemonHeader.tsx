@@ -1,24 +1,30 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 import { CLIENT_ROUTES } from '@/client/consts/clientRoutes';
 import { useUser } from '@/client/features/auth/hooks/useUser';
 
 export const PokemonHeader = () => {
   const { isAuthenticated, signInDemoUser, signOut } = useUser();
+  const pathname = usePathname();
 
   return (
     <header className="bg-gray-800 text-white py-4">
       <div className="container mx-auto">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Pokedex</h1>
+          <Link href={CLIENT_ROUTES.HOME()} className="text-2xl font-bold">
+            Pokedex
+          </Link>
           <div className="flex items-center gap-2">
-            <Link
-              href={CLIENT_ROUTES.CUSTOM_POKEMONS()}
-              className="rounded bg-white px-4 py-2 text-gray-800 hover:bg-gray-200 cursor-pointer">
-              Custom Pokemons
-            </Link>
+            {pathname !== CLIENT_ROUTES.CUSTOM_POKEMONS() && (
+              <Link
+                href={CLIENT_ROUTES.CUSTOM_POKEMONS()}
+                className="rounded bg-white px-4 py-2 text-gray-800 hover:bg-gray-200 cursor-pointer">
+                Custom Pokemons
+              </Link>
+            )}
             {isAuthenticated ? (
               <Link
                 href={CLIENT_ROUTES.CUSTOM_POKEMON_NEW()}
